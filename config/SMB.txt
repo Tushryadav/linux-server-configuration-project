@@ -1,0 +1,62 @@
+Samba is a file & printer sharing software which is used to share printers and files between same or different operating systems.
+Today, You will learn that how to install and configure Samba share on RHEL 9 and how to access it from Windows systems.
+Use below command to install samba with necessary packages.
+
+-->yum install samba samba-common samba-client -y
+ 
+Before configurations, make sure Windows machine is in same network .
+
+Samba Configuration
+before configuration rename samba default configuration file /etc/samba/smb.conf as backup.
+
+-->cp /etc/samba/smb.conf /etc/samba/smb.conf.default
+ 
+Samba Anonymous File Sharing
+Now create a shared folder on the server where all files/folders will be stored and set appropriate permissions on it and allow SELINUX for the samba configuration.
+
+Run below commands
+
+-->mkdir -p /srv/samba/anonymous
+-->chmod -R 0755 /srv/samba/anonymous
+-->chown -R nobody:nobody /srv/samba/anonymous
+-->chcon -t samba_share_t /srv/samba/anonymous
+ 
+Now make following changes in new samba configuration file.
+-->vim /etc/samba/smb.conf
+[global]
+workgroup = WORKGROUP
+server string = Samba Server %v
+netbios name = rhel9
+security = user
+map to guest = bad user
+dns proxy = no
+
+[Anonymous]
+path = /srv/samba/anonymous
+browsable =yes
+writable = yes
+guest ok = yes
+read only = no
+ 
+Run below commant to verify samba configurations
+
+-->testparm
+ 
+Start and Add Samba Services in firewall
+Run below command to add samba service in firewall
+
+-->firewall-cmd --permanent --add-service=samba
+-->firewall-cmd --reload
+ 
+start and enable samba services
+
+-->systemctl start smb.service
+-->systemctl enable smb.service
+-->systemctl start nmb.service
+-->systemctl enable nmb.service
+ 
+Access Samba Share Path
+Now open Run prompt by pressing win + r key on your keyboard then type \\rhel9(server ip) and press enter key.
+ 
+You will see Anonymous folder like below 
+Now you can add files/folders in this folder to share with other users.

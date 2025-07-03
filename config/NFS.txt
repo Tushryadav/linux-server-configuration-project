@@ -1,0 +1,37 @@
+----------------------NFS SERVER CONFIGRATION-------------------------------------------------
+Server side configration-------------->   
+   01  yum install nfs-utils libnfsidmap -y
+   02  systemctl enable rpcbind nfs-server.service  
+   03  systemctl start rpcbind.service nfs-server.service rpc-statd.service nfs-idmapd.service 
+   04  mkdir /server
+   05  cd /server
+   06  mkdir app
+   07  cd app
+   08  pwd
+   09  cd
+   10  chmod 777 /server
+   11  chmod 777 /server/app
+   12  vim /etc/exports
+                      /server/app * (rw,sync,no_root_squash)
+
+   13  exportfs -rv
+   14  systemctl stop firewalld.service 
+   15  cd /server/app
+   16  touch file1
+   17  cd
+ client side configration  ----------------------------------->
+   18  yum install nfs-utils rpcbind -y
+   19  systemctl start rpcbind
+   20  systemctl stop firewalld.service 
+   21  showmount -e 192.168.157.155
+   22  mkdir /mnt1
+   23  cd /mnt1
+   24  mkdir app
+   25  ls
+   26  cd
+   27  mount 192.168.157.155:/server/app /mnt1/app
+   28  df -h
+   29  cd /mnt1/app
+   30  ls
+-------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------

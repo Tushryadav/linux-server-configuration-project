@@ -1,0 +1,89 @@
+Step 1: Apache Install karna
+Pehle Apache HTTP server install karein:
+sudo yum install httpd -y
+
+Step 2: Apache Start aur Enable karna
+Apache server ko start aur enable karein:
+
+sudo systemctl start httpd
+sudo systemctl enable httpd
+
+Step 3: Virtual Host Directories Banayein
+Dono websites ke liye alag-alag directory banayein:
+
+sudo mkdir -p /var/www/example1.com/public_html
+sudo mkdir -p /var/www/example2.com/public_html
+
+Step 4: Permissions Set Karein
+Apache ke liye correct permissions set karein:
+
+sudo chown -R apache:apache /var/www/example1.com/public_html (optional)
+sudo chown -R apache:apache /var/www/example2.com/public_html (optional)
+sudo chmod -R 777 /var/www
+
+Step 5: Sample Pages Banayein
+Har directory mein ek index file banayein jo content show karegi:
+
+echo "<h1>Welcome to Example1.com</h1>" | sudo tee /var/www/example1.com/public_html/index.html
+echo "<h1>Welcome to Example2.com</h1>" | sudo tee /var/www/example2.com/public_html/index.html
+
+Step 6: Virtual Host Configuration Files Banayein
+Ab humein har website ke liye alag configuration file banani hogi:
+
+Example1.com ke liye:
+
+sudo vim /etc/httpd/conf.d/example1.com.conf
+Isme ye content add karein:
+
+
+<VirtualHost *:80>
+    ServerAdmin admin@example1.com
+    ServerName example1.com
+    ServerAlias www.example1.com
+    DocumentRoot /var/www/example1.com/public_html
+    ErrorLog /var/log/httpd/example1.com-error.log
+    CustomLog /var/log/httpd/example1.com-access.log combined
+</VirtualHost>
+
+Example2.com ke liye:
+
+sudo vim /etc/httpd/conf.d/example2.com.conf
+Isme ye content add karein:
+
+
+<VirtualHost *:80>
+    ServerAdmin admin@example2.com
+    ServerName example2.com
+    ServerAlias www.example2.com
+    DocumentRoot /var/www/example2.com/public_html
+    ErrorLog /var/log/httpd/example2.com-error.log
+    CustomLog /var/log/httpd/example2.com-access.log combined
+</VirtualHost>
+
+Step 7: SELinux Configuration Update karein 
+SELinux enable hone par issues ho sakte hain. Directories ke liye security context update karein:
+
+sudo chcon -R -t httpd_sys_content_t /var/www/example1.com/public_html
+sudo chcon -R -t httpd_sys_content_t /var/www/example2.com/public_html
+
+Step 8: Apache Configuration Test aur Restart karein
+Apache configuration ko test karein aur fir restart karein:
+
+sudo apachectl configtest
+sudo systemctl restart httpd
+
+Step 9: Firewall Rules Set Karein 
+Port 80 ko allow karein:
+
+sudo firewall-cmd --permanent --add-port=80/tcp
+sudo firewall-cmd --reload
+
+Step 10: Hosts File Update Karein (Testing ke liye)
+Agar aap local testing kar rahe hain toh apne /etc/hosts file mein entries add karein:
+
+vim /etc/hosts
+127.0.0.1 example1.com
+127.0.0.1 example2.com
+
+Step 11: Browser mein Websites Check Karein
+Ab apne browser mein http://example1.com aur http://example2.com URLs open karke check karein.

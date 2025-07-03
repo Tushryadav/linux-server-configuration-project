@@ -1,0 +1,12 @@
+----------------------SSH SERVER CONFIGRATION-------------------------------------------------
+Server side configration-------------->   
+   01  yum install openssh* -y
+   02 yum install ssh* -y  
+   03  vim /etc/ssh/sshd_config 
+   04  systemctl restart sshd.service
+   05  ssh-keygen
+   06  ssh-copy-id root@ip_address
+ client side configration  ----------------------------------->
+   07  ssh root@ip_address
+-------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------
